@@ -1,1 +1,166 @@
-# alpaco_project_5
+# 최종 프로젝트
+
+## 나를 닮은 브랜드를 찾아주는 Ai <BRAIND>
+
+## 기획 의도
+- <aside>
+💡 **AI 기술로 패션 브랜드들의 성장을 지원**
+
+한국에 역량 있는 신진, 스몰 패션 브랜드들이 많지만 그에 비해 **고객에게** **발견되는 방식**은 제한적이고 어렵습니다.
+
+브래인드는 AI 기술을 활용해 패션 브랜드들이 1)**적합한 고객에게 추천되고** 2)**임팩트 있는 브랜드 경험**을 만들 수 있는 새로운 방식을 제안하는 프로젝트 입니다.
+
+</aside>
+
+1. 성장중인 한국 패션 시장과 도메스틱 브랜드
+![alt text](./image/설명1.png)
+2. 랭킹, 카테고리, 이름 검색이 전부인 '브랜드 탐색'
+![alt text](./image/설명2.png)
+3. 신진, 스몰 브랜드들의 성장을 돕는 AI
+![alt text](./image/설명3.png)
+4. 주요 기능
+![alt text](./image/설명4.png)
+
+## 진행 경과
+- 사용한 모델 수 : 20
+- 학습한 이미지 데이터 수 : 288,854
+- 개발한APi 개수 : 21
+
+## 기술 스택
+- 언어: Python, VS Code, GitHub, FileZilla
+- ML 개발: Pytorch, Google Colab, Selenium, RMBG-1.4, Deface, Regnet, Swin transformer, Lavis BLIP, OOTDiffusion, YOLOv8, Scikit-Lear
+- 서비스 개발: Figma, React, Node.js
+- 기획 및 PM: Figjam, Notion, Upbase, Google Drive, Slack, Office 365
+
+## 브랜드 추천 모델 파이프 라인
+- 데이터 수집 및 전처리 : 브랜드별 스냅 이미지 약 3만장 수지 후 이미지에서 배경 및 모델 얼굴 제거
+- 스타일 분류 : shuffleNet 기반, 이미지를 7개 스타일로 라벨링하여 학습
+- VQA(Visual Question Answering) : 이미지만을 통한 특성 추출의 한계를 보완하기 위해 Multi model 기법 활용
+
+## 플로우 차트
+![alt text](./image/플로우차트.png)
+
+## 모델 개발 과정
+**패션 브랜드별 스타일 학습하기 위한 데이터 수집**
+
+<aside>
+<img src="/icons/report_red.svg" alt="/icons/report_red.svg" width="40px" /> 스타일 기반 브랜드 추천 모델 학습을 위한 브랜드별 스타일 이미지 데이터 필요
+
+</aside>
+
+<aside>
+<img src="/icons/checkmark_green.svg" alt="/icons/checkmark_green.svg" width="40px" /> 브랜드가 라벨링 되어 있는 전신 코디 이미지 데이터 약 25만장 수집
+
+</aside>
+
+<aside>
+<img src="/icons/checkmark_green.svg" alt="/icons/checkmark_green.svg" width="40px" /> 브랜드 기본 정보와 브랜드에서 판매중인 제품 이미지 및 메타 데이터 약 30만개 수집
+
+</aside>
+
+
+**이미지에서 온전한 스타일만 남기기 위한 데이터 전처리**
+
+<aside>
+<img src="/icons/report_red.svg" alt="/icons/report_red.svg" width="40px" /> 학습 및 추론에 사용할 코디 이미지에 스타일 이외의 요소들이 많음
+
+</aside>
+
+<aside>
+<img src="/icons/report_red.svg" alt="/icons/report_red.svg" width="40px" /> 온전한 1인 코디 이미지가 아닌 이상치 이미지가 있음
+
+</aside>
+
+<aside>
+<img src="/icons/checkmark_green.svg" alt="/icons/checkmark_green.svg" width="40px" /> 사용자의 인풋이 1인 전신 사진인지를 판단하기 위해 왼발, 오른발, 하체, 상체, 전신 클래스로 전신 사진 430장에 대해 Annnotation을 진행(Roboflow). 이후 yolov8m(Ultralytics)으로 Image Detection 수행결과 성능지표 mAP50(B) 0.9 이상을 달성
+
+</aside>
+
+<aside>
+<img src="/icons/checkmark_green.svg" alt="/icons/checkmark_green.svg" width="40px" /> 전신이 찍힌 이미지를 인풋으로 받아 스타일을 분석해야 하므로 사람을 제외한 배경을 제거하는 작업을 수행. Image Segmantaion을 통해 배경을 제거하였으며 Hugging Face의 RMBG-1.4를 이용
+
+</aside>
+
+<aside>
+<img src="/icons/checkmark_green.svg" alt="/icons/checkmark_green.svg" width="40px" /> 배경만을 제거한 이미지로 학습 시 성능이 높지 않았으며, Grad CAM으로 사후 분석결과, 스타일 분류시 얼굴과 가방이 분류결과에 큰 영향을 끼친다는 것을 파악. 따라서 얼굴이 아닌 전신 스타일을 통해 분석을 수행하기 위해 deface 모델을 통해 얼굴을 제거하였으며, 얼굴에 대한 영향을 최대한 배제하기 위해 모자이크 및 블러링이 아닌, 크롭을 수행. 사각형으로 크롭 수행시 얼굴을 효과적으로 제거하고 스타일에 중요 요소라고 가정한 넥라인을 보존하기 위해 mask-scale을 1.3으로 조정
+
+</aside>
+
+**이미지 기반 브랜드 스타일 특성을 얻기 위한 고민**
+
+<aside>
+<img src="/icons/report_red.svg" alt="/icons/report_red.svg" width="40px" /> 기존 딥러닝 패션 추천 시스템(FRS)은 대부분 아이템 Category 분류 지도학습을 기반으로, RGB 특성 추출에만 집중한 ‘아이템’ 단위의 추천이 대다수이며 브랜드의 스타일 기반으로 추천해주는 시스템은 없음
+
+</aside>
+
+<aside>
+<img src="/icons/checkmark_green.svg" alt="/icons/checkmark_green.svg" width="40px" /> 스타일별 코디 이미지를 7개 스타일(캐주얼, 아메카지, 걸리시, 댄디, 스포츠, 시크, 스트릿)로 라벨링 뒤 RegNet, EfficientNet (CNN 기반), Swin Transformer (트랜스포머 기반 ViT), ShuffleNet 테스트. 최고 성능(F1-score 0.8)인 ShuffleNet을 스타일 분류 모델로 선정
+
+</aside>
+
+<aside>
+<img src="/icons/checkmark_green.svg" alt="/icons/checkmark_green.svg" width="40px" /> 패션 데이터셋으로 학습한 CNN기반 모델을 추출기로 'casual'로 추론된 이미지들에 대하여 Feature 추출 후 PCA를 통해 차원축소하여 Clustering 수행
+
+옷의 재질이나 종류 등을 반영하는 Backbone 구축 후 Clustering 수행
+
+</aside>
+
+**스타일 분류 모델의 성능 문제**
+
+<aside>
+<img src="/icons/report_red.svg" alt="/icons/report_red.svg" width="40px" /> 코디 이미지를 7개 스타일로 분류하는 분류 모델이 생각보다 성능이 안나오는 문제
+
+</aside>
+
+<aside>
+<img src="/icons/report_red.svg" alt="/icons/report_red.svg" width="40px" /> 다양한 방식으로 코디 이미지 클러스터링 시도했으나 의미있는 성능 도출 못함
+
+</aside>
+
+<aside>
+<img src="/icons/report_red.svg" alt="/icons/report_red.svg" width="40px" /> 추가적인 특징 추출을 위한 Captioning 모델은 일반적으로 요구하는 리소스가 컸으며, 리소스가 적게 드는 모델은 성능이 좋지 않았음
+
+</aside>
+
+<aside>
+<img src="/icons/checkmark_green.svg" alt="/icons/checkmark_green.svg" width="40px" /> 코디 이미지에 대한 일차원적인 데이터를 뽑기 위해 리소스가 많이 들지 않고 일관된 인덱스로 답변 출력 가능한 VQA 모델 사용 하기로 함. 브랜드 코디 이미지에 대하여 상의/하의 각각 대하여 아이템, 색상, 소재, 패턴 출력,  유사 유명 브랜드, 계절 VQA로 출력. 이미지 별 10개 답변 컬럼 생성해 DB 저장
+
+</aside>
+
+<aside>
+<img src="/icons/checkmark_green.svg" alt="/icons/checkmark_green.svg" width="40px" /> 스타일 분류를 멀티 라벨링으로 7개 스타일 확률값 예측해 DB 저장, 정보 손실을 줄이기 위하여 Sigmoid 함수 적용한 멀티 라벨링 후 각 스타일 별 확률값 예측한 7개 컬럼에 각 라벨 별 예측 확률값을 벡터화
+
+</aside>
+
+**브랜드와 코디 이미지의 유사도를 계산하기 위해 이미지 벡터화**
+
+<aside>
+<img src="/icons/report_red.svg" alt="/icons/report_red.svg" width="40px" /> 임베딩 과정에서 단어당 96차원의 벡터로 변환이 되어 불필요하게 많은 벡터가 생성됨
+
+</aside>
+
+<aside>
+<img src="/icons/report_red.svg" alt="/icons/report_red.svg" width="40px" /> 브랜드 추천 알고리즘 필요
+
+</aside>
+
+<aside>
+<img src="/icons/checkmark_green.svg" alt="/icons/checkmark_green.svg" width="40px" /> 스타일 분류 결과 7개 스타일 각 라벨 별 예측 확률값을 벡터화하고 VQA로 나온 10개의 단어들을 토크나이저로 임베딩
+
+</aside>
+
+<aside>
+<img src="/icons/checkmark_green.svg" alt="/icons/checkmark_green.svg" width="40px" /> 25차원으로 줄이면 데이터의 분산이 95%가 유지되는 것을 확인하였고 연산량 줄이기 위해 PCA를 통해 96차원 벡터를 25차원으로 차원축소
+
+</aside>
+
+<aside>
+<img src="/icons/checkmark_green.svg" alt="/icons/checkmark_green.svg" width="40px" /> 스타일 벡터와 VQA 벡터를 Concat 결합. 사용자 입력 이미지와 DB에 저장된 이미지들의 벡터들 사이의 Cosine 유사도 계산 및 내림차순 정렬해 상위 브랜드 출력
+
+</aside>
+
+
+## 성능 평가
+
+![alt text](./image/성능평가.png)
+

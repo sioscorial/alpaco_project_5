@@ -3,8 +3,13 @@
 ## 나를 닮은 브랜드를 찾아주는 Ai <BRAIND>
 
 
-# 프로젝트 Notion : https://shell-memory-b8b.notion.site/BRAiND-AI-24e1c163ce814501a23f545c9572d122
-# 프로젝트 영상 : https://youtu.be/W4uW25soDqs
+## 프로젝트 Notion : 
+
+https://shell-memory-b8b.notion.site/BRAiND-AI-24e1c163ce814501a23f545c9572d122
+
+## 프로젝트 영상 : 
+
+https://youtu.be/W4uW25soDqs
 ## 기획 의도
 
 💡 **AI 기술로 패션 브랜드들의 성장을 지원**
@@ -15,13 +20,13 @@
 
 
 
-1. 성장중인 한국 패션 시장과 도메스틱 브랜드
+## 1. 성장중인 한국 패션 시장과 도메스틱 브랜드
 ![alt text](./image/설명1.png)
-2. 랭킹, 카테고리, 이름 검색이 전부인 '브랜드 탐색'
+## 2. 랭킹, 카테고리, 이름 검색이 전부인 '브랜드 탐색'
 ![alt text](./image/설명2.png)
-3. 신진, 스몰 브랜드들의 성장을 돕는 AI
+## 3. 신진, 스몰 브랜드들의 성장을 돕는 AI
 ![alt text](./image/설명3.png)
-4. 주요 기능
+## 4. 주요 기능
 ![alt text](./image/설명4.png)
 
 ## 진행 경과
